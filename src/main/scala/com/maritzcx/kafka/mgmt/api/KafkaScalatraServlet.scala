@@ -1,7 +1,5 @@
 package com.maritzcx.kafka.mgmt.api
 
-import org.scalatra._
-
 class KafkaScalatraServlet extends KafkaManagementRestApiStack {
 
   get("/") {
