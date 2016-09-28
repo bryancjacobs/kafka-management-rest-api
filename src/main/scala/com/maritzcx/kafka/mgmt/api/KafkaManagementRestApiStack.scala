@@ -1,4 +1,4 @@
-package com.maritzcx.kafka.mgmt.rest.api
+package com.maritzcx.kafka.mgmt.api
 
 import org.scalatra._
 import scalate.ScalateSupport

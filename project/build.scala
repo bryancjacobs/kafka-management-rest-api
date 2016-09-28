@@ -8,9 +8,13 @@ import ScalateKeys._
 
 object KafkaManagementRestApiBuild extends Build {
   val Organization = "com.maritzcx"
+
   val Name = "kafka-management-rest-api"
+
   val Version = "1.0"
+
   val ScalaVersion = "2.11.8"
+
   val ScalatraVersion = "2.4.1"
 
   lazy val project = Project (

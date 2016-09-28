@@ -1,4 +1,4 @@
-import com.maritzcx.kafka.mgmt.rest.api._
+import com.maritzcx.kafka.mgmt.api.KafkaScalatraServlet
 import org.scalatra._
 import javax.servlet.ServletContext
 
