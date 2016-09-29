@@ -1,4 +1,4 @@
-package com.maritzcx.kafka.mgmt.api
+package com.maritzcx.kafka.mgmt.api.config
 
 import com.maritzcx.kafka.mgmt.api.authentication.AuthenticationSupport
 import org.json4s.{DefaultFormats, Formats}

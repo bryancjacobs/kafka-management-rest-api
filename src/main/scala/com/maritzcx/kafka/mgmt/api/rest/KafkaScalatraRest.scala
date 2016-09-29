@@ -1,6 +1,6 @@
 package com.maritzcx.kafka.mgmt.api.rest
 
-import com.maritzcx.kafka.mgmt.api.KafkaManagementRestApiStack
+import com.maritzcx.kafka.mgmt.api.config.KafkaManagementRestApiStack
 
 class KafkaScalatraRest extends KafkaManagementRestApiStack {
 

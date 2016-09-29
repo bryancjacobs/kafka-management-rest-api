@@ -23,6 +23,7 @@ class OurBasicAuthStrategy(protected override val app: ScalatraBase, realm: Stri
 }
 
 trait AuthenticationSupport extends ScentrySupport[User] with BasicAuthSupport[User] {
+
   self: ScalatraBase =>
 
   val realm = "Scalatra Basic Auth Example"
