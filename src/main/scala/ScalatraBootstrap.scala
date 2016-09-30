@@ -1,12 +1,18 @@
-import com.maritzcx.kafka.mgmt.api.rest.KafkaScalatraRest
+import com.maritzcx.kafka.mgmt.api.config.{RouteHandler, AppModule}
+import com.maritzcx.kafka.mgmt.api.rest.{TopicRest}
+
 import org.scalatra._
 import javax.servlet.ServletContext
 
-class ScalatraBootstrap extends LifeCycle {
+import scaldi.Injectable
+
+class ScalatraBootstrap extends LifeCycle with Injectable {
+
+  implicit val injector = new AppModule().injector
 
   override def init(context: ServletContext) {
 
-    context.mount(new KafkaScalatraRest, "/*")
+    context.mount(inject[TopicRest], RouteHandler.TOPIC)
 
   }
 }

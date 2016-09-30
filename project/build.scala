@@ -38,9 +38,9 @@ object KafkaManagementRestApiBuild extends Build {
         "org.scalatra" %% "scalatra-auth" % ScalatraVersion,
         "com.unboundid" % "unboundid-ldapsdk" % "3.1.1",
         "org.scaldi" % "scaldi_2.11" % "0.5.7",
+        "org.apache.kafka" % "kafka_2.11" % "0.9.0.1",
         "ch.qos.logback" % "logback-classic" % "1.1.5" % "runtime",
-        "org.eclipse.jetty" % "jetty-webapp" % "9.2.15.v20160210" % "container;compile",
-        "org.scalatra" %% "scalatra-specs2" % ScalatraVersion % "test"
+        "org.eclipse.jetty" % "jetty-webapp" % "9.2.15.v20160210" % "container;compile"
     ))
   ).enablePlugins(JettyPlugin)
 }
