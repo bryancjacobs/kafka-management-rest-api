@@ -38,6 +38,7 @@ object KafkaManagementRestApiBuild extends Build {
         "com.unboundid" % "unboundid-ldapsdk" % "3.1.1",
         "org.scaldi" % "scaldi_2.11" % "0.5.7",
         "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
+        "com.typesafe" % "config" % "1.3.1",
 
         // remove the kafka log4j dependency because this project uses logback
         "org.apache.kafka" % "kafka_2.11" % "0.9.0.1" excludeAll (ExclusionRule("log4j", "log4j"), ExclusionRule("org.slf4j", "slf4j-log4j12")),

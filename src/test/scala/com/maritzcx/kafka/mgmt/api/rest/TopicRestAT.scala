@@ -39,4 +39,20 @@ class TopicRestAT extends RestSupport {
 
   }
 
+  "describeUnauthenticated" should "return 401" in {
+
+    assertUnauthenticated("/topic/describe")
+
+    assertUnauthenticated("/topic/list")
+  }
+
+  def assertUnauthenticated(path:String): Unit ={
+    get(uri = path){
+
+      status should equal (401)
+
+      body should equal ("Unauthenticated")
+    }
+  }
+
 }

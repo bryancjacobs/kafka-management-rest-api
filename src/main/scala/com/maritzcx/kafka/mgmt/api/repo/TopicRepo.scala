@@ -1,7 +1,6 @@
 package com.maritzcx.kafka.mgmt.api.repo
 
-import java.util.Properties
-
+import com.maritzcx.kafka.mgmt.api.config.ConfigManager
 import com.maritzcx.kafka.mgmt.api.exception.SystemException
 import com.maritzcx.kafka.mgmt.api.model.Topic
 import kafka.admin.AdminUtils
@@ -9,6 +8,7 @@ import kafka.admin.TopicCommand.TopicCommandOptions
 import kafka.consumer.Whitelist
 import kafka.server.ConfigType
 import kafka.utils.ZkUtils
+
 import scala.collection.Seq
 
 /**
@@ -17,7 +17,7 @@ import scala.collection.Seq
 class TopicRepo {
 
 
-  val ZK_HOST_PORT = "52.43.227.68:2181"
+  val ZK_HOST_PORT = ConfigManager.getZkHostPort
 
   val ZK_OPTS = Array("--zookeeper", ZK_HOST_PORT)
 
