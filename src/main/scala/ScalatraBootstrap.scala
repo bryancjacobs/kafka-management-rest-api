@@ -1,4 +1,4 @@
-import com.maritzcx.kafka.mgmt.api.config.{RouteHandler, AppModule}
+import com.maritzcx.kafka.mgmt.api.config.{RoutePath, AppModule}
 import com.maritzcx.kafka.mgmt.api.rest.{TopicRest}
 
 import org.scalatra._
@@ -12,7 +12,7 @@ class ScalatraBootstrap extends LifeCycle with Injectable {
 
   override def init(context: ServletContext) {
 
-    context.mount(inject[TopicRest], RouteHandler.TOPIC)
+    context.mount(inject[TopicRest], RoutePath.TOPIC)
 
   }
 }

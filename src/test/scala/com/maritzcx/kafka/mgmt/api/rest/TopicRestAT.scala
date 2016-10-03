@@ -1,7 +1,7 @@
 package com.maritzcx.kafka.mgmt.api.rest
 
 import com.maritzcx.kafka.mgmt.api.RestSupport
-import com.maritzcx.kafka.mgmt.api.config.RouteHandler
+import com.maritzcx.kafka.mgmt.api.config.RoutePath
 import com.maritzcx.kafka.mgmt.api.model.Topic
 import com.maritzcx.kafka.mgmt.api.repo.TopicRepoIT
 
@@ -10,9 +10,9 @@ import com.maritzcx.kafka.mgmt.api.repo.TopicRepoIT
   */
 class TopicRestAT extends RestSupport {
 
-  addServlet(inject[TopicRest], RouteHandler.TOPIC)
+  addServlet(inject[TopicRest], RoutePath.TOPIC)
 
-  "getAllTopics" should "return at least the topics: test1 and test2" in {
+  "list" should "return at least the topics: test1 and test2" in {
 
     get(uri = "/topic/list", headers = getAuthHeader()) {
 
@@ -20,9 +20,23 @@ class TopicRestAT extends RestSupport {
 
       val topics = parse(body).extract[List[Topic]]
 
-      TopicRepoIT.assertGetAllTopics(topics)
+      TopicRepoIT.assertList(topics)
 
     }
+  }
+
+  "describe" should "return at least topics: test1 and test2" in {
+
+    get(uri = "/topic/describe", headers = getAuthHeader()){
+
+      status should equal (200)
+
+      val topics = parse(body).extract[List[Topic]]
+
+      TopicRepoIT.assertDescribeTopics(topics)
+
+    }
+
   }
 
 }

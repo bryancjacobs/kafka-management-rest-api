@@ -29,17 +29,23 @@ object KafkaManagementRestApiBuild extends Build {
       resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
       libraryDependencies ++= Seq(
         "org.scalatra" %% "scalatra" % ScalatraVersion,
+        "org.scalatra" %% "scalatra-auth" % ScalatraVersion,
         "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
-        "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
+        "org.scalatra" %% "scalatra-json" % ScalatraVersion,
         "org.scalatest" % "scalatest_2.11" % "2.2.6",
         "org.scalatra" %% "scalatra-scalatest" % "2.4.1" % "test",
-        "org.scalatra" %% "scalatra-json" % ScalatraVersion,
         "org.json4s"   %% "json4s-jackson" % "3.3.0",
-        "org.scalatra" %% "scalatra-auth" % ScalatraVersion,
         "com.unboundid" % "unboundid-ldapsdk" % "3.1.1",
         "org.scaldi" % "scaldi_2.11" % "0.5.7",
-        "org.apache.kafka" % "kafka_2.11" % "0.9.0.1",
-        "ch.qos.logback" % "logback-classic" % "1.1.5" % "runtime",
+        "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
+
+        // remove the kafka log4j dependency because this project uses logback
+        "org.apache.kafka" % "kafka_2.11" % "0.9.0.1" excludeAll (ExclusionRule("log4j", "log4j"), ExclusionRule("org.slf4j", "slf4j-log4j12")),
+        "ch.qos.logback" % "logback-classic" % "1.1.7" % "runtime",
+
+        // use the bridge so that kafka can log and so our application
+        "org.slf4j" % "log4j-over-slf4j" % "1.7.21",
+
         "org.eclipse.jetty" % "jetty-webapp" % "9.2.15.v20160210" % "container;compile"
     ))
   ).enablePlugins(JettyPlugin)

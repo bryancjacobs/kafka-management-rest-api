@@ -7,8 +7,13 @@ import com.maritzcx.kafka.mgmt.api.repo.TopicRepo
   * Created by bjacobs on 9/29/16.
   */
 class TopicService(topicRepo: TopicRepo) {
-  def getAll(): List[Topic] = {
-    topicRepo.getAll()
+
+  def list(): List[Topic] = {
+    topicRepo.list()
+  }
+
+  def describe(): List[Topic] = {
+    topicRepo.describe()
   }
 
 }

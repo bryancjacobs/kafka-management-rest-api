@@ -10,20 +10,41 @@ class TopicRepoIT extends ScalaTestSupport  {
 
   val topicRepo = new TopicRepo
 
-  "getAllTopics" should "return test1 and test2" in {
+  "list" should "return test1 and test2" in {
 
-    val topics = topicRepo.getAll()
+    val topics = topicRepo.list()
 
-    TopicRepoIT.assertGetAllTopics(topics)
+    TopicRepoIT.assertList(topics)
+  }
+
+  "describe" should "describe at least test1 and test2" in {
+
+    val topics = topicRepo.describe()
+
+    TopicRepoIT.assertDescribeTopics(topics)
+
   }
 
 }
 
 object TopicRepoIT extends ScalaTestSupport{
 
-  def assertGetAllTopics(topics:List[Topic]): Unit ={
+  def assertList(topics:List[Topic]): Unit ={
 
-    topics should contain allOf (Topic("test1"), Topic("test2"))
+    topics should contain allOf (Topic.topic("test1"), Topic.topic("test2"))
 
   }
+
+  def assertDescribeTopics(topics:List[Topic]): Unit = {
+    val test1 = topics.filter(_.name == "test1").head
+    test1.name should equal ("test1")
+    test1.replicationFactor.get should equal (1)
+    test1.partitions.get should equal (1)
+
+    val test2 = topics.filter(_.name == "test2").head
+    test2.name should equal ("test2")
+    test2.replicationFactor.get should equal (1)
+    test2.partitions.get should equal (1)
+  }
+
 }
