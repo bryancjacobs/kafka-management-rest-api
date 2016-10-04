@@ -43,7 +43,7 @@ object KafkaManagementRestApiBuild extends Build {
 
         // remove the kafka log4j dependency because this project uses logback
         "org.apache.kafka" % "kafka_2.11" % "0.9.0.1" excludeAll (ExclusionRule("log4j", "log4j"), ExclusionRule("org.slf4j", "slf4j-log4j12")),
-        "ch.qos.logback" % "logback-classic" % "1.1.7" % "runtime",
+        "ch.qos.logback" % "logback-classic" % "1.1.7",
 
         // use the bridge so that kafka can log and so our application
         "org.slf4j" % "log4j-over-slf4j" % "1.7.21",

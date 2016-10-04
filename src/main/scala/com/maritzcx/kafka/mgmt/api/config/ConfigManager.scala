@@ -17,15 +17,27 @@ object ConfigManager {
   }
 
   def getZkHost(): String = {
-    config.getString("kafka.zk.host")
+    config.getString("zookeeper.host")
   }
 
   def getZkPort(): Int = {
-    config.getInt("kafka.zk.port")
+    config.getInt("zookeeper.port")
   }
 
   def getZkHostPort(): String = {
     s"${getZkHost()}:${getZkPort()}"
+  }
+
+  def getKafkaHost(): String = {
+    config.getString("kafka.host")
+  }
+
+  def getKafkaPort(): Int = {
+    config.getInt("kafka.port")
+  }
+
+  def getKafkaHostPort(): String = {
+    s"${getKafkaHost()}:${getKafkaPort()}"
   }
 
 }
