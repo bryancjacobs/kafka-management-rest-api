@@ -4,6 +4,23 @@ import com.maritzcx.kafka.mgmt.api.ScalaTestSupport
 
 /**
   * Created by bjacobs on 10/3/16.
+  *
+  * This test aims to ensure that the ConfigManager will return the
+  * correct configuration on local developer machines which is the "null" case
+  * and on the ci build server which is the "ci" case.
+  *
+  * If you want to test changes in this file you can simply add:
+  *
+  * System.setProperty("env", "ci") to test ci changes
+  *
+  * You could also add something like:
+  *
+  * System.setProperty("env", "prod")
+  *
+  * To ensure that the production configuration are working also
+  *
+  * NEVER CHECK THAT IN!!!
+  *
   */
 class ConfigManagerUT extends ScalaTestSupport{
 
