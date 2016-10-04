@@ -1,6 +1,6 @@
 package com.maritzcx.kafka.mgmt.api.config
 
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.ConfigFactory
 
 /**
   * Created by bjacobs on 10/3/16.
@@ -24,7 +24,7 @@ object ConfigManager {
     config.getInt("kafka.zk.port")
   }
 
-  def getZkHostPort: String = {
+  def getZkHostPort(): String = {
     s"${getZkHost()}:${getZkPort()}"
   }
 

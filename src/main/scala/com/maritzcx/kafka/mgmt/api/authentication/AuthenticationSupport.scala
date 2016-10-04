@@ -6,12 +6,13 @@ import org.scalatra.ScalatraBase
 import org.scalatra.auth.strategy.{BasicAuthStrategy, BasicAuthSupport}
 import org.scalatra.auth.{ScentryConfig, ScentrySupport}
 
-
+// TODO: consider override of basicAuth() this would allow ExceptionInfo to be returned
 class OurBasicAuthStrategy(protected override val app: ScalatraBase, realm: String) extends BasicAuthStrategy[User](app, realm) {
 
   protected def validate(userName: String, password: String)(implicit request: HttpServletRequest, response: HttpServletResponse): Option[User] = {
 
     // TODO: implement ldaps here
+
 
     if (userName == "scalatra" && password == "scalatra")
       Some(User("scalatra"))
