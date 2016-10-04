@@ -26,15 +26,19 @@ class ConfigManagerUT extends ScalaTestSupport{
 
   val ZK_PORT = 2181
 
-  val ZK_HOST_CI = "52.43.227.68"
+  val CI_HOST = "52.43.227.68"
 
-  val ZK_HOST = "localhost"
+  val LOCALHOST = "localhost"
+
+  val KAFKA_PORT = 9200
+
+  val KAFKA_PORT_CI = 6667
 
   "getZkHost" should "return the zookeeper host" in {
 
     System.getProperty("env") match {
-      case "ci" => ConfigManager.getZkHost() should equal (ZK_HOST_CI)
-      case null => ConfigManager.getZkHost() should equal (ZK_HOST)
+      case "ci" => ConfigManager.getZkHost() should equal (CI_HOST)
+      case null => ConfigManager.getZkHost() should equal (LOCALHOST)
     }
   }
 
@@ -49,10 +53,33 @@ class ConfigManagerUT extends ScalaTestSupport{
   "getZkHostPort" should "return the host:port" in {
 
     System.getProperty("env") match {
-      case "ci" => ConfigManager.getZkHostPort() should equal (s"${ZK_HOST_CI}:${ZK_PORT}")
-      case null => ConfigManager.getZkHostPort should equal (s"${ZK_HOST}:${ZK_PORT}")
+      case "ci" => ConfigManager.getZkHostPort() should equal (s"${CI_HOST}:${ZK_PORT}")
+      case null => ConfigManager.getZkHostPort should equal (s"${LOCALHOST}:${ZK_PORT}")
     }
 
+  }
+
+  "getKafkaHost" should "return kafka host" in {
+    System.getProperty("env") match {
+      case "ci" => ConfigManager.getKafkaHost() should equal (CI_HOST)
+      case null => ConfigManager.getKafkaHost() should equal (LOCALHOST)
+    }
+  }
+
+  "getKafkaPort" should "return kafka port" in {
+
+    System.getProperty("env") match {
+      case "ci" => ConfigManager.getKafkaPort() should equal (6667)
+      case null => ConfigManager.getKafkaPort() should equal (9200)
+    }
+  }
+
+  "getKafkaHostPort" should "return kafka host and port" in {
+
+    System.getProperty("env") match {
+      case "ci" => ConfigManager.getKafkaHostPort() should equal (s"${CI_HOST}:${KAFKA_PORT_CI}")
+      case null => ConfigManager.getKafkaHostPort() should equal (s"${LOCALHOST}:${KAFKA_PORT}")
+    }
   }
 
 }
