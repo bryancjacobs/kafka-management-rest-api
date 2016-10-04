@@ -13,7 +13,7 @@ class ConfigManagerUT extends ScalaTestSupport{
 
   val ZK_HOST = "localhost"
 
-  "getZkHost" should "return the zookeeper host in application.conf" in {
+  "getZkHost" should "return the zookeeper host" in {
 
     System.getProperty("env") match {
       case "ci" => ConfigManager.getZkHost() should equal (ZK_HOST_CI)
@@ -21,7 +21,7 @@ class ConfigManagerUT extends ScalaTestSupport{
     }
   }
 
-  "getZkPort" should "return the zookeeper port in the application.conf" in {
+  "getZkPort" should "return the zookeeper port" in {
 
     System.getProperty("env") match {
       case "ci" => ConfigManager.getZkPort() should equal (ZK_PORT)
@@ -29,7 +29,7 @@ class ConfigManagerUT extends ScalaTestSupport{
     }
   }
 
-  "getZkHostPort" should "return the host:port from application.conf" in {
+  "getZkHostPort" should "return the host:port" in {
 
     System.getProperty("env") match {
       case "ci" => ConfigManager.getZkHostPort() should equal (s"${ZK_HOST_CI}:${ZK_PORT}")
