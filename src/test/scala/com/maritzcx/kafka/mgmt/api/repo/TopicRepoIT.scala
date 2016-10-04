@@ -25,6 +25,12 @@ class TopicRepoIT extends ScalaTestSupport  {
 
   }
 
+  "getOffsets" should "return offsets for the given topic" in {
+
+    topicRepo.getOffset("test3")
+
+  }
+
 }
 
 object TopicRepoIT extends ScalaTestSupport{

@@ -30,7 +30,7 @@ class ConfigManagerUT extends ScalaTestSupport{
 
   val LOCALHOST = "localhost"
 
-  val KAFKA_PORT = 9200
+  val KAFKA_PORT = 9092
 
   val KAFKA_PORT_CI = 6667
 
@@ -70,7 +70,7 @@ class ConfigManagerUT extends ScalaTestSupport{
 
     System.getProperty("env") match {
       case "ci" => ConfigManager.getKafkaPort() should equal (6667)
-      case null => ConfigManager.getKafkaPort() should equal (9200)
+      case null => ConfigManager.getKafkaPort() should equal (KAFKA_PORT)
     }
   }
 

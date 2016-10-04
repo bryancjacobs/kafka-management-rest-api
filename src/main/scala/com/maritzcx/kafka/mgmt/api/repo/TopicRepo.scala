@@ -5,7 +5,10 @@ import com.maritzcx.kafka.mgmt.api.exception.SystemException
 import com.maritzcx.kafka.mgmt.api.model.Topic
 import kafka.admin.AdminUtils
 import kafka.admin.TopicCommand.TopicCommandOptions
-import kafka.consumer.Whitelist
+import kafka.api.{PartitionOffsetRequestInfo, OffsetRequest}
+import kafka.client.ClientUtils
+import kafka.common.TopicAndPartition
+import kafka.consumer.{SimpleConsumer, Whitelist}
 import kafka.server.ConfigType
 import kafka.utils.ZkUtils
 
@@ -109,6 +112,55 @@ class TopicRepo {
     }
 
     topics
+  }
+
+  def getOffset(topicName:String): Unit ={
+
+
+    val clientId = "GetOffsetShell"
+    val brokerList = ConfigManager.getKafkaHostPort()
+
+    val metadataTargetBrokers = ClientUtils.parseBrokerList(brokerList)
+
+    val topic = topicName
+
+    val partitionList = ""
+    val time = -2
+    val nOffsets = 1
+    val maxWaitMs = 1000
+
+    val topicsMetadata = ClientUtils.fetchTopicMetadata(Set(topic), metadataTargetBrokers, clientId, maxWaitMs).topicsMetadata
+
+    if(topicsMetadata.size != 1 || !topicsMetadata(0).topic.equals(topic)) {
+      System.err.println(("Error: no valid topic metadata for topic: %s, " + " probably the topic does not exist, run ").format(topic) +
+        "kafka-list-topic.sh to verify")
+      System.exit(1)
+    }
+
+    val partitions =
+      if(partitionList == "") {
+        topicsMetadata.head.partitionsMetadata.map(_.partitionId)
+      } else {
+        partitionList.split(",").map(_.toInt).toSeq
+      }
+
+    partitions.foreach { partitionId =>
+      val partitionMetadataOpt = topicsMetadata.head.partitionsMetadata.find(_.partitionId == partitionId)
+      partitionMetadataOpt match {
+        case Some(metadata) =>
+          metadata.leader match {
+            case Some(leader) =>
+              val consumer = new SimpleConsumer(leader.host, leader.port, 10000, 100000, clientId)
+              val topicAndPartition = TopicAndPartition(topic, partitionId)
+              val request = OffsetRequest(Map(topicAndPartition -> PartitionOffsetRequestInfo(time, nOffsets)))
+              val offsets = consumer.getOffsetsBefore(request).partitionErrorAndOffsets(topicAndPartition).offsets
+
+              println("%s:%d:%s".format(topic, partitionId, offsets.mkString(",")))
+            case None => System.err.println("Error: partition %d does not have a leader. Skip getting offsets".format(partitionId))
+          }
+        case None => System.err.println("Error: partition %d does not exist".format(partitionId))
+      }
+    }
   }
 
   /**
