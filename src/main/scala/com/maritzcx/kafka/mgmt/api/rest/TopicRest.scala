@@ -9,39 +9,39 @@ import org.slf4j.LoggerFactory
   */
 class TopicRest(topicService: TopicService) extends KafkaManagementRestApiStack {
 
-  val LOGGER = LoggerFactory.getLogger(this.getClass)
+  val LOG = LoggerFactory.getLogger(this.getClass)
 
   get("/list"){
 
-    LOGGER.info("START - params=NONE")
+    LOG.info("START - params=NONE")
 
     val topics = topicService.list()
 
-    LOGGER.info(s"END - result=$topics")
+    LOG.info(s"END - result=$topics")
 
     topics
   }
 
   get("/describe"){
 
-    LOGGER.info("START - params=NONE")
+    LOG.info("START - params=NONE")
 
     val topics = topicService.describe()
 
-    LOGGER.info(s"END - result=$topics")
+    LOG.info(s"END - result=$topics")
 
     topics
 
   }
 
   get("getOffsets/:topicName"){
-    LOGGER.info("START - params=NONE")
+    LOG.info("START - params=NONE")
 
     val topicName = params.get("topicName").get
 
     val topics = topicService.getOffsets(topicName)
 
-    LOGGER.info(s"END - result=$topics")
+    LOG.info(s"END - result=$topics")
 
     topics
   }

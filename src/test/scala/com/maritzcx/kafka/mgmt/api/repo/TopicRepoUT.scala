@@ -17,6 +17,10 @@ class TopicRepoUT extends ScalaTestSupport{
     a [NotFoundException] should be thrownBy topicRepo.getOffsets("not-a-topic")
   }
 
+  /**
+    * this is a very white box test but this scenario is very odd
+    * and need to make sure that the exception handling will work
+    */
   it should "throw a SystemException when topicMetadatas size is not 1" in {
 
     val mockTopic = "MockTopic"
