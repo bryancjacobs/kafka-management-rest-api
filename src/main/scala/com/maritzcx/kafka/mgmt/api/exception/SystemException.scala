@@ -12,7 +12,6 @@ package com.maritzcx.kafka.mgmt.api.exception
   *
   * These are examples of when this exception would be thrown
   */
-class SystemException(message:String, cause:Throwable)
-  extends RuntimeException(message:String, cause:Throwable){
+case class SystemException(message:String, cause:Throwable) extends RuntimeException(message, cause){
 
 }

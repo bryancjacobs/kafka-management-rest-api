@@ -16,4 +16,8 @@ class TopicService(topicRepo: TopicRepo) {
     topicRepo.describe()
   }
 
+  def getOffsets(name:String): List[Topic] = {
+    topicRepo.getOffsets(name)
+  }
+
 }

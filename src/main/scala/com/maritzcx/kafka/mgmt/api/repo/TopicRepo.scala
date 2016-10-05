@@ -1,16 +1,17 @@
 package com.maritzcx.kafka.mgmt.api.repo
 
 import com.maritzcx.kafka.mgmt.api.config.ConfigManager
-import com.maritzcx.kafka.mgmt.api.exception.SystemException
+import com.maritzcx.kafka.mgmt.api.exception.{NotFoundException, SystemException}
 import com.maritzcx.kafka.mgmt.api.model.Topic
 import kafka.admin.AdminUtils
 import kafka.admin.TopicCommand.TopicCommandOptions
-import kafka.api.{PartitionOffsetRequestInfo, OffsetRequest}
+import kafka.api.{TopicMetadata, PartitionOffsetRequestInfo, OffsetRequest}
 import kafka.client.ClientUtils
 import kafka.common.TopicAndPartition
 import kafka.consumer.{SimpleConsumer, Whitelist}
 import kafka.server.ConfigType
 import kafka.utils.ZkUtils
+import org.slf4j.LoggerFactory
 
 import scala.collection.Seq
 
@@ -19,8 +20,9 @@ import scala.collection.Seq
   */
 class TopicRepo {
 
+  val LOGGER = LoggerFactory.getLogger(this.getClass)
 
-  val ZK_HOST_PORT = ConfigManager.getZkHostPort
+  val ZK_HOST_PORT = ConfigManager.getZkHostPort()
 
   val ZK_OPTS = Array("--zookeeper", ZK_HOST_PORT)
 
@@ -114,53 +116,64 @@ class TopicRepo {
     topics
   }
 
-  def getOffset(topicName:String): Unit ={
+  def getOffsets(topicName:String): List[Topic] ={
 
+    // this is very important because there is a bug in fetchTopicMetadata that creates non-existent topics
+    if(list().filter(_.name.equals(topicName)).size == 0 ) // if we didn't find a match
+      throw new NotFoundException(s"Topic: $topicName does not exist")
 
     val clientId = "GetOffsetShell"
     val brokerList = ConfigManager.getKafkaHostPort()
-
-    val metadataTargetBrokers = ClientUtils.parseBrokerList(brokerList)
-
-    val topic = topicName
-
     val partitionList = ""
     val time = -2
     val nOffsets = 1
-    val maxWaitMs = 1000
 
-    val topicsMetadata = ClientUtils.fetchTopicMetadata(Set(topic), metadataTargetBrokers, clientId, maxWaitMs).topicsMetadata
+    val topicMetadatas = getTopicMetadatas(topicName, brokerList)
 
-    if(topicsMetadata.size != 1 || !topicsMetadata(0).topic.equals(topic)) {
-      System.err.println(("Error: no valid topic metadata for topic: %s, " + " probably the topic does not exist, run ").format(topic) +
-        "kafka-list-topic.sh to verify")
-      System.exit(1)
+    // not sure how this state can even exist
+    if(topicMetadatas.size != 1) {
+      throw new SystemException(s"Error: no valid topic metadata for topic: $topicName, probably does not exist", null)
     }
 
     val partitions =
       if(partitionList == "") {
-        topicsMetadata.head.partitionsMetadata.map(_.partitionId)
-      } else {
+        topicMetadatas.head.partitionsMetadata.map(_.partitionId)
+      }
+      else {
         partitionList.split(",").map(_.toInt).toSeq
       }
 
+    var topics = List[Topic]()
+
     partitions.foreach { partitionId =>
-      val partitionMetadataOpt = topicsMetadata.head.partitionsMetadata.find(_.partitionId == partitionId)
+
+      val partitionMetadataOpt = topicMetadatas.head.partitionsMetadata.find(_.partitionId == partitionId)
+
       partitionMetadataOpt match {
         case Some(metadata) =>
           metadata.leader match {
             case Some(leader) =>
               val consumer = new SimpleConsumer(leader.host, leader.port, 10000, 100000, clientId)
-              val topicAndPartition = TopicAndPartition(topic, partitionId)
+              val topicAndPartition = TopicAndPartition(topicName, partitionId)
               val request = OffsetRequest(Map(topicAndPartition -> PartitionOffsetRequestInfo(time, nOffsets)))
               val offsets = consumer.getOffsetsBefore(request).partitionErrorAndOffsets(topicAndPartition).offsets
 
-              println("%s:%d:%s".format(topic, partitionId, offsets.mkString(",")))
-            case None => System.err.println("Error: partition %d does not have a leader. Skip getting offsets".format(partitionId))
+              topics = Topic.topic(topicName, partitionId, offsets.mkString(",")) :: topics
+
+            case None => LOGGER.info(s"Error: partition $partitionId does not have a leader. Skip getting offsets")
           }
-        case None => System.err.println("Error: partition %d does not exist".format(partitionId))
+        case None => LOGGER.info(s"Error: partition $partitionId does not exist")
       }
     }
+
+    topics
+  }
+
+  def getTopicMetadatas(topic:String, brokerList:String): Seq[TopicMetadata] = {
+    ClientUtils.fetchTopicMetadata(Set(topic),
+                                    ClientUtils.parseBrokerList(brokerList),
+                                    "GetOffsetShell",
+                                    1000).topicsMetadata
   }
 
   /**

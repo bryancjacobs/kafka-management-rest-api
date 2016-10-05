@@ -1,6 +1,7 @@
 package com.maritzcx.kafka.mgmt.api.repo
 
 import com.maritzcx.kafka.mgmt.api.ScalaTestSupport
+import com.maritzcx.kafka.mgmt.api.exception.NotFoundException
 import com.maritzcx.kafka.mgmt.api.model.Topic
 
 /**
@@ -27,7 +28,9 @@ class TopicRepoIT extends ScalaTestSupport  {
 
   "getOffsets" should "return offsets for the given topic" in {
 
-    topicRepo.getOffset("test3")
+    val topics = topicRepo.getOffsets("test2")
+
+    TopicRepoIT.assertOffsetTopics(topics)
 
   }
 
@@ -51,6 +54,11 @@ object TopicRepoIT extends ScalaTestSupport{
     test2.name should equal ("test2")
     test2.replicationFactor.get should equal (1)
     test2.partitions.get should equal (1)
+  }
+
+  def assertOffsetTopics(topics:List[Topic]): Unit = {
+    val topicName = "test2"
+    topics should contain only(Topic.topic(topicName,0,"0" ))
   }
 
 }

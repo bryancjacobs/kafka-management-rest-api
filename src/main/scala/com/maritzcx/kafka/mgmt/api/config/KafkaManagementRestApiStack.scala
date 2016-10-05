@@ -1,7 +1,7 @@
 package com.maritzcx.kafka.mgmt.api.config
 
 import com.maritzcx.kafka.mgmt.api.authentication.AuthenticationSupport
-import com.maritzcx.kafka.mgmt.api.exception.SystemException
+import com.maritzcx.kafka.mgmt.api.exception.{NotFoundException, SystemException}
 import com.maritzcx.kafka.mgmt.api.model.ExceptionInfo
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
@@ -11,10 +11,14 @@ import org.json4s.jackson.Serialization.write
 
 trait KafkaManagementRestApiStack extends ScalatraServlet
   with ScalateSupport
-  with JacksonJsonSupport
-  with AuthenticationSupport {
+with JacksonJsonSupport
+with AuthenticationSupport {
 
   protected implicit lazy val jsonFormats: Formats = DefaultFormats
+
+  val NOT_FOUND = 404
+
+  val SERVER_ERROR = 500
 
   /**
     * Provides a place to enforce basicAuth for all routes
@@ -33,16 +37,8 @@ trait KafkaManagementRestApiStack extends ScalatraServlet
     * Any exception that is not caught will pass through here
     */
   error{
-
-    // TODO: for now all exceptions will be considered a 500
-    case e: Throwable => {
-
-      val status = 500
-
-      halt(status, write(ExceptionInfo(e.getMessage, status)))
-
-    }
-
+    case e: NotFoundException => halt(NOT_FOUND, write(ExceptionInfo(e.getMessage, NOT_FOUND)))
+    case e: Throwable => halt(SERVER_ERROR, write(ExceptionInfo(e.getMessage, SERVER_ERROR)))
   }
 
 }

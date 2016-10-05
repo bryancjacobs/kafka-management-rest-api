@@ -34,4 +34,16 @@ class TopicRest(topicService: TopicService) extends KafkaManagementRestApiStack 
 
   }
 
+  get("getOffsets/:topicName"){
+    LOGGER.info("START - params=NONE")
+
+    val topicName = params.get("topicName").get
+
+    val topics = topicService.getOffsets(topicName)
+
+    LOGGER.info(s"END - result=$topics")
+
+    topics
+  }
+
 }
