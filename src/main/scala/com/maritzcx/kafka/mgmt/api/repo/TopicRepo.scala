@@ -31,11 +31,12 @@ class TopicRepo {
     */
   def list(): List[Topic] = {
 
+    val zkUtils = getZkUtils()
+
     try{
 
       val opts = new TopicCommandOptions(ZK_OPTS ++ Array[String]("--list"))
 
-      val zkUtils = ZkUtils(ZK_HOST_PORT, 30000, 30000, false)
 
       getTopicNames(zkUtils, opts).map(Topic.topic(_)).toList
 
@@ -43,77 +44,86 @@ class TopicRepo {
     catch {
       case t: Throwable => throw new SystemException("failed to retrieve topic list", t)
     }
+    finally{
+      zkUtils.close()
+    }
   }
 
   def describe() : List[Topic] = {
 
-    val opts = new TopicCommandOptions(ZK_OPTS ++ Array[String]("--describe"))
+    val zkUtils = getZkUtils()
 
-    val zkUtils = ZkUtils(ZK_HOST_PORT, 30000, 30000, false)
+    try {
+      val opts = new TopicCommandOptions(ZK_OPTS ++ Array[String]("--describe"))
 
-    val topicNames = getTopicNames(zkUtils, opts)
 
-    val reportUnderReplicatedPartitions = if (opts.options.has(opts.reportUnderReplicatedPartitionsOpt)) true else false
+      val topicNames = getTopicNames(zkUtils, opts)
 
-    val reportUnavailablePartitions = if (opts.options.has(opts.reportUnavailablePartitionsOpt)) true else false
+      val reportUnderReplicatedPartitions = if (opts.options.has(opts.reportUnderReplicatedPartitionsOpt)) true else false
 
-    val reportOverriddenConfigs = if (opts.options.has(opts.topicsWithOverridesOpt)) true else false
+      val reportUnavailablePartitions = if (opts.options.has(opts.reportUnavailablePartitionsOpt)) true else false
 
-    val liveBrokers = zkUtils.getAllBrokersInCluster().map(_.id).toSet
+      val reportOverriddenConfigs = if (opts.options.has(opts.topicsWithOverridesOpt)) true else false
 
-    var topics = List[Topic]()
+      val liveBrokers = zkUtils.getAllBrokersInCluster().map(_.id).toSet
 
-    for (topicName <- topicNames) {
+      var topics = List[Topic]()
 
-      val topic = Topic.topic(topicName)
+      for (topicName <- topicNames) {
 
-      zkUtils.getPartitionAssignmentForTopics(List(topicName)).get(topicName) match {
+        val topic = Topic.topic(topicName)
 
-        case Some(topicPartitionAssignment) =>
-          val describeConfigs: Boolean = !reportUnavailablePartitions && !reportUnderReplicatedPartitions
+        zkUtils.getPartitionAssignmentForTopics(List(topicName)).get(topicName) match {
 
-          val describePartitions: Boolean = !reportOverriddenConfigs
+          case Some(topicPartitionAssignment) =>
+            val describeConfigs: Boolean = !reportUnavailablePartitions && !reportUnderReplicatedPartitions
 
-          val sortedPartitions = topicPartitionAssignment.toList.sortWith((m1, m2) => m1._1 < m2._1)
+            val describePartitions: Boolean = !reportOverriddenConfigs
 
-          if (describeConfigs) {
+            val sortedPartitions = topicPartitionAssignment.toList.sortWith((m1, m2) => m1._1 < m2._1)
 
-            val configs = AdminUtils.fetchEntityConfig(zkUtils, ConfigType.Topic, topicName)
+            if (describeConfigs) {
 
-            if (!reportOverriddenConfigs || configs.size() != 0) {
-              val numPartitions = topicPartitionAssignment.size
-              topic.partitions = Option.apply(numPartitions)
+              val configs = AdminUtils.fetchEntityConfig(zkUtils, ConfigType.Topic, topicName)
 
-              val replicationFactor = topicPartitionAssignment.head._2.size
-              topic.replicationFactor = Option.apply(replicationFactor)
+              if (!reportOverriddenConfigs || configs.size() != 0) {
+                val numPartitions = topicPartitionAssignment.size
+                topic.partitions = Option.apply(numPartitions)
 
-            }
-          }
+                val replicationFactor = topicPartitionAssignment.head._2.size
+                topic.replicationFactor = Option.apply(replicationFactor)
 
-          if (describePartitions) {
-            for ((partitionId, assignedReplicas) <- sortedPartitions) {
-              val inSyncReplicas = zkUtils.getInSyncReplicasForPartition(topicName, partitionId)
-              val leader = zkUtils.getLeaderForPartition(topicName, partitionId)
-              if ((!reportUnderReplicatedPartitions && !reportUnavailablePartitions) ||
-                (reportUnderReplicatedPartitions && inSyncReplicas.size < assignedReplicas.size) ||
-                (reportUnavailablePartitions && (!leader.isDefined || !liveBrokers.contains(leader.get)))) {
-
-                topic.name = topicName
-                topic.partitionId = Option.apply(partitionId)
-                topic.leader = Option.apply(leader.get)
-                topic.replicas = Option.apply(assignedReplicas.mkString(","))
-                topic.isr = Option.apply(inSyncReplicas.mkString(","))
               }
             }
-          }
-        case None =>
-          println("Topic " + topicName + " doesn't exist!")
+
+            if (describePartitions) {
+              for ((partitionId, assignedReplicas) <- sortedPartitions) {
+                val inSyncReplicas = zkUtils.getInSyncReplicasForPartition(topicName, partitionId)
+                val leader = zkUtils.getLeaderForPartition(topicName, partitionId)
+                if ((!reportUnderReplicatedPartitions && !reportUnavailablePartitions) ||
+                  (reportUnderReplicatedPartitions && inSyncReplicas.size < assignedReplicas.size) ||
+                  (reportUnavailablePartitions && (!leader.isDefined || !liveBrokers.contains(leader.get)))) {
+
+                  topic.name = topicName
+                  topic.partitionId = Option.apply(partitionId)
+                  topic.leader = Option.apply(leader.get)
+                  topic.replicas = Option.apply(assignedReplicas.mkString(","))
+                  topic.isr = Option.apply(inSyncReplicas.mkString(","))
+                }
+              }
+            }
+          case None =>
+            println("Topic " + topicName + " doesn't exist!")
+        }
+
+        topics = topic :: topics
       }
 
-      topics = topic :: topics
+      topics
     }
-
-    topics
+    finally{
+      zkUtils.close()
+    }
   }
 
   def getOffsets(topicName:String): List[Topic] ={
@@ -166,9 +176,17 @@ class TopicRepo {
       }
     }
 
+
+
     topics
   }
 
+  /**
+    * mostly exposed for testing purposes but perhaps would prove useful in other ways
+    * @param topic
+    * @param brokerList
+    * @return
+    */
   def getTopicMetadatas(topic:String, brokerList:String): Seq[TopicMetadata] = {
     ClientUtils.fetchTopicMetadata(Set(topic),
                                     ClientUtils.parseBrokerList(brokerList),
@@ -178,6 +196,8 @@ class TopicRepo {
 
   /**
     * return just the topic names a strings
+    *
+    * remember to close the zkutils reference because this method doesn't do that
     *
     * @param opts
     * @return
@@ -201,6 +221,10 @@ class TopicRepo {
 
     }
 
+  }
+
+  private def getZkUtils(): ZkUtils = {
+    ZkUtils(ZK_HOST_PORT, 30000, 30000, false)
   }
 
 }
