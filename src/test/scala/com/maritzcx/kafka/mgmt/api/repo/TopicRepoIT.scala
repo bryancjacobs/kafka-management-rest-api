@@ -37,26 +37,26 @@ class TopicRepoIT extends ScalaTestSupport  {
 
   "create" should "create a valid topic" in {
 
-    try{
+    val expectedTopic = Topic.topic("theTopic", 1, 1)
 
-      val expectedTopic = Topic.topic("theTopic", 1, 1)
+    try{
 
       val finalTopic = topicRepo.create(expectedTopic)
 
       finalTopic should equal (expectedTopic)
     }
     finally{
-      cleanup()
+      cleanup(expectedTopic.name)
     }
 
   }
 
-  private def cleanup(): Unit ={
+  private def cleanup(topicName:String): Unit ={
     val zkUtils = ZkUtils(topicRepo.ZK_HOST_PORT, 30000, 30000, false)
 
     try{
 
-      AdminUtils.deleteTopic(zkUtils,"theTopic")
+      AdminUtils.deleteTopic(zkUtils, topicName)
 
     }
     finally {
