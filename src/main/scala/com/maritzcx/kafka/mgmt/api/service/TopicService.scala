@@ -20,4 +20,8 @@ class TopicService(topicRepo: TopicRepo) {
     topicRepo.getOffsets(name)
   }
 
+  def create(topic:Topic): Topic = {
+    topicRepo.create(topic)
+  }
+
 }

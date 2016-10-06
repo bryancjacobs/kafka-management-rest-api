@@ -1,6 +1,7 @@
 package com.maritzcx.kafka.mgmt.api.repo
 
 import com.maritzcx.kafka.mgmt.api.ScalaTestSupport
+import com.maritzcx.kafka.mgmt.api.config.ConfigManager
 import com.maritzcx.kafka.mgmt.api.model.Topic
 import kafka.admin.AdminUtils
 import kafka.utils.ZkUtils
@@ -46,23 +47,12 @@ class TopicRepoIT extends ScalaTestSupport  {
       finalTopic should equal (expectedTopic)
     }
     finally{
-      cleanup(expectedTopic.name)
+      TopicRepoIT.deleteTopic(expectedTopic.name)
     }
 
   }
 
-  private def cleanup(topicName:String): Unit ={
-    val zkUtils = ZkUtils(topicRepo.ZK_HOST_PORT, 30000, 30000, false)
 
-    try{
-
-      AdminUtils.deleteTopic(zkUtils, topicName)
-
-    }
-    finally {
-      zkUtils.close()
-    }
-  }
 
 }
 
@@ -89,6 +79,17 @@ object TopicRepoIT extends ScalaTestSupport{
   def assertOffsetTopics(topics:List[Topic]): Unit = {
     val topicName = "test2"
     topics should contain only(Topic.topic(topicName,0,"0" ))
+  }
+
+  def deleteTopic(topicName:String): Unit ={
+    val zkUtils = ZkUtils(ConfigManager.getZkHostPort(), 30000, 30000, false)
+
+    try{
+      AdminUtils.deleteTopic(zkUtils, topicName)
+    }
+    finally {
+      zkUtils.close()
+    }
   }
 
 }

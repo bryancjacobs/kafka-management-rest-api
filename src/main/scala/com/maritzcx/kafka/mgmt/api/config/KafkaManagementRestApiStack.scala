@@ -1,7 +1,7 @@
 package com.maritzcx.kafka.mgmt.api.config
 
 import com.maritzcx.kafka.mgmt.api.authentication.AuthenticationSupport
-import com.maritzcx.kafka.mgmt.api.exception.{NotFoundException, SystemException}
+import com.maritzcx.kafka.mgmt.api.exception.{TopicAlreadyExistsException, NotFoundException, SystemException}
 import com.maritzcx.kafka.mgmt.api.model.ExceptionInfo
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
@@ -20,6 +20,8 @@ with AuthenticationSupport {
   val NOT_FOUND = 404
 
   val SERVER_ERROR = 500
+
+  val BAD_REQUEST = 400
 
   val LOGGER = LoggerFactory.getLogger(this.getClass)
 
@@ -40,6 +42,13 @@ with AuthenticationSupport {
     * Any exception that is not caught will pass through here
     */
   error{
+
+    case e:IllegalArgumentException =>{
+      handleBadInput(e)
+    }
+    case e: TopicAlreadyExistsException =>{
+      handleBadInput(e)
+    }
     case e: NotFoundException => {
       LOGGER.warn("Not Found", e)
       halt(NOT_FOUND, write(ExceptionInfo(e.getMessage, NOT_FOUND)))
@@ -49,6 +58,13 @@ with AuthenticationSupport {
       halt(SERVER_ERROR, write(ExceptionInfo(e.getMessage, SERVER_ERROR)))
     }
 
+  }
+
+
+  // TODO: improve implementation to reuse exception handling
+  private def handleBadInput(e:RuntimeException): Unit ={
+    LOGGER.warn("Invalid User Input", e)
+    halt(BAD_REQUEST, write(ExceptionInfo(e.getMessage, BAD_REQUEST)))
   }
 
 }
