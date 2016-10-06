@@ -64,8 +64,7 @@ class TopicRestAT extends RestSupport {
     }
   }
 
-  "describeUnauthenticated" should "return 401 for list" in {
-
+  "unauthenticated" should "return 401 for list" in {
     assertUnauthenticated("/topic/list")
   }
 
