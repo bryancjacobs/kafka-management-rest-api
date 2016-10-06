@@ -1,7 +1,7 @@
 package com.maritzcx.kafka.mgmt.api.repo
 
 import com.maritzcx.kafka.mgmt.api.ScalaTestSupport
-import com.maritzcx.kafka.mgmt.api.exception.{SystemException, NotFoundException}
+import com.maritzcx.kafka.mgmt.api.exception.{TopicAlreadyExistsException, SystemException, NotFoundException}
 import com.maritzcx.kafka.mgmt.api.model.Topic
 import kafka.api.TopicMetadata
 
@@ -28,6 +28,15 @@ class TopicRepoUT extends ScalaTestSupport{
     val topicRepo = new TopicRepoMock(List(Topic.topic(mockTopic)))
 
     a [SystemException] should be thrownBy topicRepo.getOffsets(mockTopic)
+  }
+
+  "create" should "throw TopicAlreadyExistsException before a duplicate topic is created" in {
+
+    val duplicateTopic = "duplicate-topic"
+
+    val topicRepo = new TopicRepoMock(List(Topic.topic(duplicateTopic)))
+
+    a [TopicAlreadyExistsException] should be thrownBy topicRepo.create(Topic.topic(duplicateTopic,1,1))
   }
 
   /**

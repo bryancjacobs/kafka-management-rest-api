@@ -27,4 +27,8 @@ object Topic{
     Topic(name, None, None, Option.apply(partitionId), None, None,None, Option.apply(offsets))
   }
 
+  def topic(name:String, partitions:Int, replicationFactor:Int): Topic ={
+    Topic(name, Option.apply(replicationFactor), Option.apply(partitions), None, None, None,None,None)
+  }
+
 }

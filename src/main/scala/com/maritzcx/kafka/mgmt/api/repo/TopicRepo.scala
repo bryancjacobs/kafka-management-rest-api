@@ -1,9 +1,11 @@
 package com.maritzcx.kafka.mgmt.api.repo
 
+import java.util.Properties
+
 import com.maritzcx.kafka.mgmt.api.config.ConfigManager
-import com.maritzcx.kafka.mgmt.api.exception.{NotFoundException, SystemException}
+import com.maritzcx.kafka.mgmt.api.exception.{TopicAlreadyExistsException, NotFoundException, SystemException}
 import com.maritzcx.kafka.mgmt.api.model.Topic
-import kafka.admin.AdminUtils
+import kafka.admin.{TopicCommand, AdminUtils}
 import kafka.admin.TopicCommand.TopicCommandOptions
 import kafka.api.{TopicMetadata, PartitionOffsetRequestInfo, OffsetRequest}
 import kafka.client.ClientUtils
@@ -176,13 +178,42 @@ class TopicRepo {
       }
     }
 
-
-
     topics
+  }
+
+  def create(topic:Topic): Topic ={
+
+    if(list().filter(_.name == topic.name).size == 1)
+      throw new TopicAlreadyExistsException(s"Topic: ${topic.name} already exists", null)
+
+    val topicName = topic.name
+
+//    if (kafka.common.Topic.hasCollisionChars(topicName))
+//      LOGGER.warn("WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.")
+
+    val partitions = topic.partitions.get
+
+    val replicas = topic.replicationFactor.get
+
+    val props = new Properties();
+
+    TopicCommand.warnOnMaxMessagesChange(props, replicas)
+
+    val zkUtils = getZkUtils()
+
+    try{
+      AdminUtils.createTopic(zkUtils, topicName, partitions, replicas, props)
+    }
+    finally{
+      zkUtils.close()
+    }
+
+    topic
   }
 
   /**
     * mostly exposed for testing purposes but perhaps would prove useful in other ways
+    *
     * @param topic
     * @param brokerList
     * @return

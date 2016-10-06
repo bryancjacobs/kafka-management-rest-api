@@ -1,8 +1,9 @@
 package com.maritzcx.kafka.mgmt.api.repo
 
 import com.maritzcx.kafka.mgmt.api.ScalaTestSupport
-import com.maritzcx.kafka.mgmt.api.exception.NotFoundException
 import com.maritzcx.kafka.mgmt.api.model.Topic
+import kafka.admin.AdminUtils
+import kafka.utils.ZkUtils
 
 /**
   * Created by bjacobs on 9/29/16.
@@ -32,6 +33,35 @@ class TopicRepoIT extends ScalaTestSupport  {
 
     TopicRepoIT.assertOffsetTopics(topics)
 
+  }
+
+  "create" should "create a valid topic" in {
+
+    try{
+
+      val expectedTopic = Topic.topic("theTopic", 1, 1)
+
+      val finalTopic = topicRepo.create(expectedTopic)
+
+      finalTopic should equal (expectedTopic)
+    }
+    finally{
+      cleanup()
+    }
+
+  }
+
+  private def cleanup(): Unit ={
+    val zkUtils = ZkUtils(topicRepo.ZK_HOST_PORT, 30000, 30000, false)
+
+    try{
+
+      AdminUtils.deleteTopic(zkUtils,"theTopic")
+
+    }
+    finally {
+      zkUtils.close()
+    }
   }
 
 }
