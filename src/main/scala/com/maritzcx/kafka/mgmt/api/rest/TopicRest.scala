@@ -71,7 +71,12 @@ class TopicRest(topicService: TopicService) extends KafkaManagementRestApiStack 
 
     LOG.info(s"START - params=$topicName")
 
+    if(true){
+      throw new RuntimeException("bad stuff")
+    }
+
     val deleteTopic = topicService.delete(topicName)
+
 
     LOG.info(s"END - result=$topicName")
 

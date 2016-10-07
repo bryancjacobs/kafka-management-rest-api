@@ -107,9 +107,6 @@ object TopicRepoIT extends ScalaTestSupport{
     actualTopic.name should equal (expectedTopic.name)
     actualTopic.partitions should equal (expectedTopic.partitions)
     actualTopic.replicationFactor should equal (expectedTopic.replicationFactor)
-
-
-    new TopicRepo().list() should not contain(expectedTopic.name)
   }
 
   /**
@@ -118,7 +115,15 @@ object TopicRepoIT extends ScalaTestSupport{
     * @param topic
     */
   def createTopic(topic:Topic): Unit ={
-    topicRepo.create(topic)
+
+    try{
+
+      topicRepo.create(topic)
+    }
+    catch{
+      case e:TopicAlreadyExistsException => println("topic already exists...just ignoring that")
+      case e:Throwable => fail(e)
+    }
   }
 
   /**

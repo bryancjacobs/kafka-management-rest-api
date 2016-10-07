@@ -179,6 +179,10 @@ class TopicRestAT extends RestSupport {
     assertUnauthenticatedPost("/topic")
   }
 
+  it should "return 401 for delete" in {
+    assertUnauthenticatedDelete("/topic")
+  }
+
   def assertUnauthenticatedGet(path:String): Unit ={
     get(uri = path){
 
