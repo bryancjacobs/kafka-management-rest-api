@@ -1,5 +1,7 @@
 package com.maritzcx.kafka.mgmt.api.repo
 
+import java.util.UUID
+
 import com.maritzcx.kafka.mgmt.api.ScalaTestSupport
 import com.maritzcx.kafka.mgmt.api.exception.{TopicAlreadyExistsException, SystemException, NotFoundException}
 import com.maritzcx.kafka.mgmt.api.model.Topic
@@ -37,6 +39,21 @@ class TopicRepoUT extends ScalaTestSupport{
     val topicRepo = new TopicRepoMock(List(Topic.topic(duplicateTopic)))
 
     a [TopicAlreadyExistsException] should be thrownBy topicRepo.create(Topic.topic(duplicateTopic,1,1))
+  }
+
+  "delete" should "throw NotFoundException when trying to delete a non-existent topic" in {
+
+    val nonExistentTopic = "nonExistentTopic"
+
+    val topicRepo = new TopicRepoMock(List(Topic.topic("existingTopic")))
+
+    a [NotFoundException] should be thrownBy topicRepo.delete(nonExistentTopic)
+  }
+
+  "describe" should "throw NotFoundException if the topic does not exist" in {
+    val topicRepo = new TopicRepoMock(List())
+
+    a [NotFoundException] should be thrownBy  topicRepo.describe(UUID.randomUUID().toString)
   }
 
   /**

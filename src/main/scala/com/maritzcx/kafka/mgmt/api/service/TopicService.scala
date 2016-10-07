@@ -7,13 +7,17 @@ import com.maritzcx.kafka.mgmt.api.repo.TopicRepo
   * Created by bjacobs on 9/29/16.
   */
 class TopicService(topicRepo: TopicRepo) {
+  def delete(topicName: String) = {
+    topicRepo.delete(topicName)
+  }
+
 
   def list(): List[Topic] = {
     topicRepo.list()
   }
 
-  def describe(): List[Topic] = {
-    topicRepo.describe()
+  def describeAll(): List[Topic] = {
+    topicRepo.describeAll()
   }
 
   def getOffsets(name:String): List[Topic] = {

@@ -24,11 +24,11 @@ class TopicRest(topicService: TopicService) extends KafkaManagementRestApiStack 
     topics
   }
 
-  get("/describe"){
+  get("/describeAll"){
 
     LOG.info("START - params=NONE")
 
-    val topics = topicService.describe()
+    val topics = topicService.describeAll()
 
     LOG.info(s"END - result=$topics")
 
@@ -63,6 +63,19 @@ class TopicRest(topicService: TopicService) extends KafkaManagementRestApiStack 
     LOG.info(s"END - result=$topicResponse")
 
     topicResponse
+  }
+
+  delete("/:topicName"){
+
+    val topicName = params.get("topicName").get
+
+    LOG.info(s"START - params=$topicName")
+
+    val deleteTopic = topicService.delete(topicName)
+
+    LOG.info(s"END - result=$topicName")
+
+    deleteTopic
   }
 
 }

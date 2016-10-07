@@ -51,7 +51,7 @@ class TopicRepo {
     }
   }
 
-  def describe() : List[Topic] = {
+  def describeAll() : List[Topic] = {
 
     val zkUtils = getZkUtils()
 
@@ -126,6 +126,20 @@ class TopicRepo {
     finally{
       zkUtils.close()
     }
+  }
+
+  /**
+    * TODO: implementation should ONLY return the topic and not filter all topic
+    *
+    * @param topicName
+    * @return
+    */
+  def describe(topicName:String): Topic ={
+
+    if(list().filter(_.name == topicName).size == 0)
+      throw new NotFoundException(s"Topic: $topicName not found")
+
+    describeAll().filter(_.name == topicName).head
   }
 
   def getOffsets(topicName:String): List[Topic] ={
@@ -209,6 +223,30 @@ class TopicRepo {
     }
 
     topic
+  }
+
+  def delete(topicName:String): Topic = {
+
+    if(list().filter(_.name == topicName).size == 0)
+      throw new NotFoundException(s"Topic: $topicName does not exist")
+
+    // TODO: figure out how to test this
+    if(kafka.common.Topic.InternalTopics.contains(topicName))
+      throw new IllegalArgumentException(s"Topic: $topicName is an internal topic and the api does not support internal topic deletion")
+
+    val zkUtils = getZkUtils()
+
+    try {
+
+      val topic = describe(topicName)
+
+      AdminUtils.deleteTopic(zkUtils, topicName)
+
+      topic
+    }
+    finally{
+      zkUtils.close()
+    }
   }
 
   /**

@@ -1,5 +1,7 @@
 package com.maritzcx.kafka.mgmt.api.rest
 
+import java.util.UUID
+
 import com.maritzcx.kafka.mgmt.api.RestSupport
 import com.maritzcx.kafka.mgmt.api.config.RoutePath
 import com.maritzcx.kafka.mgmt.api.model.{ExceptionInfo, Topic}
@@ -10,6 +12,8 @@ import org.json4s.jackson.Serialization._
   * Created by bjacobs on 9/29/16.
   */
 class TopicRestAT extends RestSupport {
+
+  val UNAUTHENTICATED = "Unauthenticated"
 
   addServlet(inject[TopicRest], RoutePath.TOPIC)
 
@@ -26,15 +30,15 @@ class TopicRestAT extends RestSupport {
     }
   }
 
-  "describe" should "return at least topics: test1 and test2" in {
+  "describeAll" should "return at least topics: test1 and test2" in {
 
-    get(uri = "/topic/describe", headers = getAuthHeader()){
+    get(uri = "/topic/describeAll", headers = getAuthHeader()){
 
       status should equal (200)
 
       val topics = parse(body).extract[List[Topic]]
 
-      TopicRepoIT.assertDescribeTopics(topics)
+      TopicRepoIT.assertDescribeAllTopics(topics)
 
     }
 
@@ -139,6 +143,25 @@ class TopicRestAT extends RestSupport {
     }
   }
 
+  "delete" should "remove an existing topic" in {
+
+    val topicName = UUID.randomUUID().toString
+
+    val expectedTopic = Topic.topic(topicName, 1, 1)
+
+    TopicRepoIT.createTopic(expectedTopic)
+
+    delete(uri = s"/topic/$topicName", headers = getAuthHeader()){
+
+      status should equal (200)
+
+      val actualTopic = parse(body).extract[Topic]
+
+      TopicRepoIT.assertDeleteTopic(actualTopic, expectedTopic)
+    }
+
+  }
+
 
   "unauthenticated" should "return 401 for list" in {
     assertUnauthenticatedGet("/topic/list")
@@ -161,7 +184,7 @@ class TopicRestAT extends RestSupport {
 
       status should equal (401)
 
-      body should equal ("Unauthenticated")
+      body should equal (UNAUTHENTICATED)
     }
   }
 
@@ -169,7 +192,15 @@ class TopicRestAT extends RestSupport {
     post(uri = path, body="bogusdata"){
       status should equal (401)
 
-      body should equal("Unauthenticated")
+      body should equal(UNAUTHENTICATED)
+    }
+  }
+
+  def assertUnauthenticatedDelete(path:String): Unit = {
+    delete(uri = path){
+      status should equal (401)
+
+      body should equal(UNAUTHENTICATED)
     }
   }
 

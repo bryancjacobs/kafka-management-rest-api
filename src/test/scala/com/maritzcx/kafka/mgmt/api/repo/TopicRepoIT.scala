@@ -1,10 +1,10 @@
 package com.maritzcx.kafka.mgmt.api.repo
 
+import java.util.UUID
+
 import com.maritzcx.kafka.mgmt.api.ScalaTestSupport
-import com.maritzcx.kafka.mgmt.api.config.ConfigManager
+import com.maritzcx.kafka.mgmt.api.exception.TopicAlreadyExistsException
 import com.maritzcx.kafka.mgmt.api.model.Topic
-import kafka.admin.AdminUtils
-import kafka.utils.ZkUtils
 
 /**
   * Created by bjacobs on 9/29/16.
@@ -20,11 +20,11 @@ class TopicRepoIT extends ScalaTestSupport  {
     TopicRepoIT.assertList(topics)
   }
 
-  "describe" should "describe at least test1 and test2" in {
+  "describeAll" should "describe at least test1 and test2" in {
 
-    val topics = topicRepo.describe()
+    val topics = topicRepo.describeAll()
 
-    TopicRepoIT.assertDescribeTopics(topics)
+    TopicRepoIT.assertDescribeAllTopics(topics)
 
   }
 
@@ -42,9 +42,9 @@ class TopicRepoIT extends ScalaTestSupport  {
 
     try{
 
-      val finalTopic = topicRepo.create(expectedTopic)
+      val actualTopic = topicRepo.create(expectedTopic)
 
-      finalTopic should equal (expectedTopic)
+      actualTopic should equal (expectedTopic)
     }
     finally{
       TopicRepoIT.deleteTopic(expectedTopic.name)
@@ -52,11 +52,31 @@ class TopicRepoIT extends ScalaTestSupport  {
 
   }
 
+  "delete" should "delete the an existing topic" in {
+
+    val topicName = UUID.randomUUID().toString
+
+    val expectedTopic = Topic.topic(topicName, 1, 1)
+
+    try{
+      TopicRepoIT.createTopic(expectedTopic)
+    }
+    catch{
+      case e:TopicAlreadyExistsException => println(e.getMessage)
+      case e:Throwable => fail(e)
+    }
 
 
+    val actualTopic = topicRepo.delete(topicName)
+
+    TopicRepoIT.assertDeleteTopic(actualTopic, expectedTopic)
+
+  }
 }
 
 object TopicRepoIT extends ScalaTestSupport{
+
+  val topicRepo = new TopicRepo
 
   def assertList(topics:List[Topic]): Unit ={
 
@@ -64,7 +84,7 @@ object TopicRepoIT extends ScalaTestSupport{
 
   }
 
-  def assertDescribeTopics(topics:List[Topic]): Unit = {
+  def assertDescribeAllTopics(topics:List[Topic]): Unit = {
     val test1 = topics.filter(_.name == "test1").head
     test1.name should equal ("test1")
     test1.replicationFactor.get should equal (1)
@@ -81,15 +101,31 @@ object TopicRepoIT extends ScalaTestSupport{
     topics should contain only(Topic.topic(topicName,0,"0" ))
   }
 
-  def deleteTopic(topicName:String): Unit ={
-    val zkUtils = ZkUtils(ConfigManager.getZkHostPort(), 30000, 30000, false)
+  def assertDeleteTopic(actualTopic:Topic, expectedTopic:Topic): Unit ={
+    actualTopic.name should equal (expectedTopic.name)
+    actualTopic.partitions should equal (expectedTopic.partitions)
+    actualTopic.replicationFactor should equal (expectedTopic.replicationFactor)
 
-    try{
-      AdminUtils.deleteTopic(zkUtils, topicName)
-    }
-    finally {
-      zkUtils.close()
-    }
+
+    new TopicRepo().list() should not contain(expectedTopic.name)
+  }
+
+  /**
+    * maybe a bad idea...
+    *
+    * @param topic
+    */
+  def createTopic(topic:Topic): Unit ={
+    topicRepo.create(topic)
+  }
+
+  /**
+    * maybe a bad idea...
+    *
+    * @param topicName
+    */
+  def deleteTopic(topicName:String): Unit ={
+    topicRepo.delete(topicName)
   }
 
 }
