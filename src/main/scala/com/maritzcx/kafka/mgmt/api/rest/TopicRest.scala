@@ -3,6 +3,7 @@ package com.maritzcx.kafka.mgmt.api.rest
 import com.maritzcx.kafka.mgmt.api.config.KafkaManagementRestApiStack
 import com.maritzcx.kafka.mgmt.api.model.Topic
 import com.maritzcx.kafka.mgmt.api.service.TopicService
+import com.maritzcx.kafka.mgmt.api.validation.PostTopicValidation.validate
 import org.slf4j.LoggerFactory
 
 /**
@@ -51,19 +52,17 @@ class TopicRest(topicService: TopicService) extends KafkaManagementRestApiStack 
 
     LOG.info(s"START - params=NONE")
 
-    val topic = parsedBody.extract[Topic]
+    val topicRequest = parsedBody.extract[Topic]
 
-    if(topic.partitions == None || topic.replicationFactor == None){
-      throw new IllegalArgumentException("Partitions and ReplicationFactor are REQUIRED")
-    }
+    validate(topicRequest)
 
-    LOG.info(s"POSTED-JSON: $topic")
+    LOG.info(s"POSTED-JSON: $topicRequest")
 
-    val createdTopic = topicService.create(topic)
+    val topicResponse = topicService.create(topicRequest)
 
-    LOG.info(s"END - result=$createdTopic")
+    LOG.info(s"END - result=$topicResponse")
 
-    createdTopic
+    topicResponse
   }
 
 }
