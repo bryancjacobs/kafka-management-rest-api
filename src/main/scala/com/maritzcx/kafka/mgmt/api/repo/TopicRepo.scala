@@ -71,8 +71,6 @@ class TopicRepo {
 
       var topics = List[Topic]()
 
-      LOGGER.info(s"topicNames: $topicNames")
-
       for (topicName <- topicNames) {
 
         val topic = Topic.topic(topicName)

@@ -72,6 +72,8 @@ class TopicRestAT extends RestSupport {
 
   "create" should "return the same topic that was passed int" in {
 
+    (pending)
+
     import org.json4s.jackson.Serialization.{write}
 
     val topicName = "the-test-topic"
@@ -144,6 +146,8 @@ class TopicRestAT extends RestSupport {
   }
 
   "delete" should "remove an existing topic" in {
+
+    (pending)
 
     val topicName = UUID.randomUUID().toString
 
