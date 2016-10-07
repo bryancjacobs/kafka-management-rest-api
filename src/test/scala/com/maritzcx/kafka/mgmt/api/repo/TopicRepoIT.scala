@@ -54,20 +54,13 @@ class TopicRepoIT extends ScalaTestSupport  {
 
   }
 
-  "delete" should "delete the an existing topic" in {
+  "delete" should "delete the existing topic" in {
 
     val topicName = UUID.randomUUID().toString
 
     val expectedTopic = Topic.topic(topicName, 1, 1)
 
-    try{
-      TopicRepoIT.createTopic(expectedTopic)
-    }
-    catch{
-      case e:TopicAlreadyExistsException => println(e.getMessage)
-      case e:Throwable => fail(e)
-    }
-
+    TopicRepoIT.createTopic(expectedTopic)
 
     val actualTopic = topicRepo.delete(topicName)
 
