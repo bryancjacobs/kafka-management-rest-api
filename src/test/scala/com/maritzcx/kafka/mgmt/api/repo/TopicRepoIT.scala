@@ -5,6 +5,8 @@ import java.util.UUID
 import com.maritzcx.kafka.mgmt.api.ScalaTestSupport
 import com.maritzcx.kafka.mgmt.api.exception.TopicAlreadyExistsException
 import com.maritzcx.kafka.mgmt.api.model.Topic
+import kafka.admin.AdminUtils
+import kafka.utils.ZkUtils
 
 /**
   * Created by bjacobs on 9/29/16.
@@ -125,7 +127,10 @@ object TopicRepoIT extends ScalaTestSupport{
     * @param topicName
     */
   def deleteTopic(topicName:String): Unit ={
-    topicRepo.delete(topicName)
+
+    val zkUtils = topicRepo.getZkUtils()
+
+    AdminUtils.deleteTopic(zkUtils, topicName)
   }
 
 }

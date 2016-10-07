@@ -292,7 +292,7 @@ class TopicRepo {
 
   }
 
-  private def getZkUtils(): ZkUtils = {
+  def getZkUtils(): ZkUtils = {
     ZkUtils(ZK_HOST_PORT, 30000, 30000, false)
   }
 
