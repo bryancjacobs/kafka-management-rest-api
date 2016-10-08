@@ -61,6 +61,8 @@ class TopicRepoIT extends ScalaTestSupport  {
 
     TopicRepoIT.createTopic(expectedTopic)
 
+    Thread.sleep(500)
+
     val actualTopic = topicRepo.delete(topicName)
 
     TopicRepoIT.assertDeleteTopic(actualTopic, expectedTopic)
