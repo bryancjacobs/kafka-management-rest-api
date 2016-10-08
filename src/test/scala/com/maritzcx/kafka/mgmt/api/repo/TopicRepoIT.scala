@@ -55,8 +55,6 @@ class TopicRepoIT extends ScalaTestSupport  {
 
   "delete" should "delete the existing topic" in {
 
-    (pending)
-
     val topicName = UUID.randomUUID().toString
 
     val expectedTopic = Topic.topic(topicName, 1, 1)
@@ -129,7 +127,15 @@ object TopicRepoIT extends ScalaTestSupport{
 
     val zkUtils = topicRepo.getZkUtils()
 
-    AdminUtils.deleteTopic(zkUtils, topicName)
+    try{
+
+      AdminUtils.deleteTopic(zkUtils, topicName)
+    }
+    finally{
+
+      zkUtils.close()
+    }
+
   }
 
 }

@@ -71,6 +71,10 @@ class TopicRepo {
 
       var topics = List[Topic]()
 
+      if(topicNames == null || topicNames.isEmpty){
+        throw new NotFoundException("There are currently no available topics on the server")
+      }
+
       for (topicName <- topicNames) {
 
         val topic = Topic.topic(topicName)
@@ -201,9 +205,6 @@ class TopicRepo {
       throw new TopicAlreadyExistsException(s"Topic: ${topic.name} already exists", null)
 
     val topicName = topic.name
-
-//    if (kafka.common.Topic.hasCollisionChars(topicName))
-//      LOGGER.warn("WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.")
 
     val partitions = topic.partitions.get
 
