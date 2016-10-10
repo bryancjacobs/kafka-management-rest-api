@@ -3,7 +3,7 @@ package com.maritzcx.kafka.mgmt.api.rest
 import com.maritzcx.kafka.mgmt.api.config.KafkaManagementRestApiStack
 import com.maritzcx.kafka.mgmt.api.model.Topic
 import com.maritzcx.kafka.mgmt.api.service.TopicService
-import com.maritzcx.kafka.mgmt.api.validation.PostTopicValidation.validate
+import com.maritzcx.kafka.mgmt.api.validation.CreateTopicValidation.validate
 import org.slf4j.LoggerFactory
 
 /**

@@ -5,6 +5,7 @@ import java.util.Properties
 import com.maritzcx.kafka.mgmt.api.config.ConfigManager
 import com.maritzcx.kafka.mgmt.api.exception.{TopicAlreadyExistsException, NotFoundException, SystemException}
 import com.maritzcx.kafka.mgmt.api.model.Topic
+import com.maritzcx.kafka.mgmt.api.validation.CreateTopicValidation
 import kafka.admin.{TopicCommand, AdminUtils}
 import kafka.admin.TopicCommand.TopicCommandOptions
 import kafka.api.{TopicMetadata, PartitionOffsetRequestInfo, OffsetRequest}
@@ -201,6 +202,8 @@ class TopicRepo {
 
   def create(topic:Topic): Topic ={
 
+    CreateTopicValidation.validate(topic)
+
     if(list().filter(_.name == topic.name).size == 1)
       throw new TopicAlreadyExistsException(s"Topic: ${topic.name} already exists", null)
 
@@ -239,11 +242,9 @@ class TopicRepo {
 
     try {
 
-      val topic = describe(topicName)
-
       AdminUtils.deleteTopic(zkUtils, topicName)
 
-      topic
+      Topic.topic(topicName)
     }
     finally{
       zkUtils.close()

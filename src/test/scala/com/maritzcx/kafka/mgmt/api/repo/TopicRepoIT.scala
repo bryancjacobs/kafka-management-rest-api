@@ -99,8 +99,6 @@ object TopicRepoIT extends ScalaTestSupport{
 
   def assertDeleteTopic(actualTopic:Topic, expectedTopic:Topic): Unit ={
     actualTopic.name should equal (expectedTopic.name)
-    actualTopic.partitions should equal (expectedTopic.partitions)
-    actualTopic.replicationFactor should equal (expectedTopic.replicationFactor)
   }
 
   /**
