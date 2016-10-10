@@ -1,3 +1,4 @@
+
 import sbt._
 import Keys._
 import org.scalatra.sbt._
@@ -22,6 +23,7 @@ object KafkaManagementRestApiBuild extends Build {
     "kafka-management-rest-api",
     file("."),
     settings = ScalatraPlugin.scalatraSettings ++ scalateSettings ++ Seq(
+      zipAssembliesTask(),
       organization := Organization,
       name := Name,
       version := Version,
@@ -52,4 +54,56 @@ object KafkaManagementRestApiBuild extends Build {
         "org.eclipse.jetty" % "jetty-webapp" % "9.2.15.v20160210" % "container;compile"
     ))
   ).enablePlugins(JettyPlugin)
+
+  private def zipAssembliesTask() : Def.Setting[Task[File]] = {
+
+    /**
+      * this MUST be used like:
+      *   sbt assembly zip-assemblies
+      *   on the build server to ensure that old jars don't get deployed
+      * running:
+      *   sbt zip-assemblies
+      *
+      *   doesn't invoke assembly so you might get old jars on the file system.
+      *   For "sbt zip-assemblies" to work correctly would require the zip-assemblies task to invoke assembly on all projects
+      *   and then run itself.  This would ensure that each projects assembly jars have been created.
+      *   Current implementation requires the person running the build to know about this issue
+      */
+    val zipAssemblies = TaskKey[File]("zip-assemblies", "Creates a zip file containing necessary case and response scripts and deps")
+
+    zipAssemblies := {
+
+      // reusable across all scripts
+      val assemblyName = "assembly"
+      val baseProjectPath = baseDirectory.value.getAbsolutePath
+
+      val jar = "jar"
+      val targetScala = "target/scala-2.11"
+      val jarPostfix = s"$assemblyName-${version.value}.$jar"
+      val jarName = s"${baseDirectory.value.getName}-$jarPostfix"
+
+      val applicationConfFilename = "application.conf"
+      val applicationCiConfFilename = "application-ci.conf"
+
+      val targetConf = s"$baseProjectPath/target/conf"
+
+      // directory to contain all application conf files
+      IO.createDirectories(Seq(file(targetConf)))
+
+      // specify zip contents
+      val zipContents: Seq[(File, String)] = Seq(
+        (file(s"$targetConf/${applicationConfFilename}"), s"conf/$applicationConfFilename"),
+        (file(s"$targetConf/${applicationCiConfFilename}"), s"conf/$applicationCiConfFilename"),
+        (file(s"${baseProjectPath}/${targetScala}/${jarName}"), jarName)
+
+      )
+
+      val zip = file(s"$baseProjectPath/$targetScala/${baseDirectory.value.getName}-assemblies-${version.value}.zip")
+
+      IO.zip(zipContents, zip)
+
+      zip
+
+    }
+  }
 }
