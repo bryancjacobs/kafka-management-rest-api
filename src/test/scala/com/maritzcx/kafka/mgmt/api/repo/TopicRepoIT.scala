@@ -39,7 +39,7 @@ class TopicRepoIT extends ScalaTestSupport  {
 
   "create" should "create a valid topic" in {
 
-    val expectedTopic = Topic.topic("theTopic", 1, 1)
+    val expectedTopic = Topic.topic(UUID.randomUUID().toString, 1, 1)
 
     try{
 
