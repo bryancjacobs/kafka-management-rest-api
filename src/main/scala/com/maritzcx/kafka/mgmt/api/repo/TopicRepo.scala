@@ -153,7 +153,7 @@ class TopicRepo {
     if(list().filter(_.name.equals(topicName)).size == 0 ) // if we didn't find a match
       throw new NotFoundException(s"Topic: $topicName does not exist")
 
-    val clientId = "GetOffsetShell"
+    val clientId = "KafkaManagementRestApi"
     val brokerList = ConfigManager.getKafkaHostPort()
     val partitionList = ""
     val time = -2

@@ -95,7 +95,6 @@ object KafkaManagementRestApiBuild extends Build {
         (file(s"$targetConf/${applicationConfFilename}"), s"conf/$applicationConfFilename"),
         (file(s"$targetConf/${applicationCiConfFilename}"), s"conf/$applicationCiConfFilename"),
         (file(s"${baseProjectPath}/${targetScala}/${jarName}"), jarName)
-
       )
 
       val zip = file(s"$baseProjectPath/$targetScala/${baseDirectory.value.getName}-assemblies-${version.value}.zip")
