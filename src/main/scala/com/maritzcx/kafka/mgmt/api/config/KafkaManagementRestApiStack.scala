@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory
 
 trait KafkaManagementRestApiStack extends ScalatraServlet
   with ScalateSupport
-with JacksonJsonSupport
-with AuthenticationSupport {
+  with JacksonJsonSupport
+  with AuthenticationSupport {
 
   protected implicit lazy val jsonFormats: Formats = DefaultFormats
 
