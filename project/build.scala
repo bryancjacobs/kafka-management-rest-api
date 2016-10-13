@@ -51,7 +51,8 @@ object KafkaManagementRestApiBuild extends Build {
         // use the bridge so that kafka can log and so our application
         "org.slf4j" % "log4j-over-slf4j" % "1.7.21",
 
-        "org.eclipse.jetty" % "jetty-webapp" % "9.2.15.v20160210" % "container;compile"
+        "org.eclipse.jetty" % "jetty-webapp" % "9.2.15.v20160210" % "container;compile",
+        "org.codehaus.janino" % "janino" % "2.6.1"
     ))
   ).enablePlugins(JettyPlugin)
 

@@ -1,5 +1,7 @@
 <configuration>
-    <!-- http://logback.qos.ch/manual/appenders.html -->
+
+    <jmxConfigurator />
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -8,7 +10,14 @@
 
     <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
 
-        <file>kafka-management-rest-api.log</file>
+        <if condition='isDefined("log.path")'>
+            <then>
+                <file>${log.path}/kafka-management-rest-api.log</file>
+            </then>
+            <else>
+                <file>kafka-management-rest-api.log</file>
+            </else>
+        </if>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
 
