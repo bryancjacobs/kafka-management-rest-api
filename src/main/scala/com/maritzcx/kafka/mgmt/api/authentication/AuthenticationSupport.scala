@@ -42,10 +42,8 @@ class OurBasicAuthStrategy(protected override val app: ScalatraBase, realm: Stri
     // TODO: implement ldaps here
 
 
-    if (userName == "scalatra" && password == "scalatra")
-    Some(User("scalatra"))
-    else
-    None
+    if (userName == "scalatra" && password == "scalatra") Some(User("scalatra"))
+    else None
   }
 
   protected def getUserId(user: User)(implicit request: HttpServletRequest, response: HttpServletResponse): String = user.id

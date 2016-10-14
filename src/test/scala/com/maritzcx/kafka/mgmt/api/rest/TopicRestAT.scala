@@ -114,7 +114,7 @@ class TopicRestAT extends RestSupport {
   it should "return 400 if partitions are not specified" in {
     val topicName = "test1"
 
-    val expectedTopic = Topic(topicName,Option.apply(1),None,None, None,None,None,None)
+    val expectedTopic = Topic(topicName,Some(1),None,None, None,None,None,None)
 
     post(uri = "/topic", body = write(expectedTopic).getBytes(), getAuthHeader()) {
 
@@ -130,7 +130,7 @@ class TopicRestAT extends RestSupport {
   it should "return 400 if replication factor is not specified" in {
     val topicName = "test1"
 
-    val expectedTopic = Topic(topicName,None,Option.apply(1),None, None,None,None,None)
+    val expectedTopic = Topic(topicName,None,Some(1),None, None,None,None,None)
 
     post(uri = "/topic", body = write(expectedTopic).getBytes(), getAuthHeader()) {
 

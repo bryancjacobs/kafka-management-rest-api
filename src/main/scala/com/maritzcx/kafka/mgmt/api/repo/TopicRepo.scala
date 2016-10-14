@@ -95,10 +95,10 @@ class TopicRepo {
 
               if (!reportOverriddenConfigs || configs.size() != 0) {
                 val numPartitions = topicPartitionAssignment.size
-                topic.partitions = Option.apply(numPartitions)
+                topic.partitions = Some(numPartitions)
 
                 val replicationFactor = topicPartitionAssignment.head._2.size
-                topic.replicationFactor = Option.apply(replicationFactor)
+                topic.replicationFactor = Some(replicationFactor)
 
               }
             }
@@ -112,10 +112,10 @@ class TopicRepo {
                   (reportUnavailablePartitions && (!leader.isDefined || !liveBrokers.contains(leader.get)))) {
 
                   topic.name = topicName
-                  topic.partitionId = Option.apply(partitionId)
-                  topic.leader = Option.apply(leader.get)
-                  topic.replicas = Option.apply(assignedReplicas.mkString(","))
-                  topic.isr = Option.apply(inSyncReplicas.mkString(","))
+                  topic.partitionId = Some(partitionId)
+                  topic.leader = Some(leader.get)
+                  topic.replicas = Some(assignedReplicas.mkString(","))
+                  topic.isr = Some(inSyncReplicas.mkString(","))
                 }
               }
             }
