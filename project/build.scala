@@ -119,6 +119,8 @@ object KafkaManagementRestApiBuild extends Build {
 
       println(s"${baseProjectPath}/${targetScala}/${jarName}")
 
+      println(s"$baseProjectPath/target/upack.json")
+
       val zipContents: Seq[(File, String)] = Seq(
         (file(s"$targetConf/${applicationConfFilename}"), s"conf/$applicationConfFilename"),
         (file(s"$targetConf/${applicationCiConfFilename}"), s"conf/$applicationCiConfFilename"),
