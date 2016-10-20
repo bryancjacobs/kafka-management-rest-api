@@ -126,7 +126,7 @@ object KafkaManagementRestApiBuild extends Build {
         (file(s"$baseProjectPath/target/upack.json"), s"upack.json")
       )
 
-      val zip = file(s"$baseProjectPath/$targetScala/${baseDirectory.value.getName}-assemblies-${version.value}.zip")
+      val zip = file(s"$baseProjectPath/$targetScala/${baseDirectory.value.getName}-assemblies-${version.value}.upack")
 
       IO.zip(zipContents, zip)
 
