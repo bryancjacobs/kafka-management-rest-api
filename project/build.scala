@@ -94,7 +94,7 @@ object KafkaManagementRestApiBuild extends Build {
 
       val upackJson = s"""
         {
-        "name":"kafka-management-rest-api"
+        "name":"${baseDirectory.value.getName}"
         "version": ${version.value}
         }
           """
