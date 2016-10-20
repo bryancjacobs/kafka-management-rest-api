@@ -11,6 +11,7 @@ import com.mojolly.scalate.ScalatePlugin._
   *
   */
 object KafkaManagementRestApiBuild extends Build {
+
   val Organization = "com.maritzcx"
 
   val Name = "kafka-management-rest-api"
@@ -22,7 +23,7 @@ object KafkaManagementRestApiBuild extends Build {
   val ScalatraVersion = "2.4.1"
 
   lazy val project = Project (
-    "kafka-management-rest-api",
+    Name,
     file("."),
     settings = ScalatraPlugin.scalatraSettings ++ scalateSettings ++ Seq(
       zipAssembliesTask(),
@@ -84,7 +85,7 @@ object KafkaManagementRestApiBuild extends Build {
       val jar = "jar"
       val targetScala = "target/scala-2.11"
       val jarPostfix = s"$assemblyName-${version.value}.$jar"
-      val jarName = s"${baseDirectory.value.getName}-$jarPostfix"
+      val jarName = s"${Name}-$jarPostfix"
 
       println(s"jarName: ${jarName}")
 
@@ -119,16 +120,13 @@ object KafkaManagementRestApiBuild extends Build {
 
       println(s"${baseProjectPath}/${targetScala}/${jarName}")
 
-      println(s"$baseProjectPath/target/upack.json")
-
       val zipContents: Seq[(File, String)] = Seq(
-        (file(s"$targetConf/${applicationConfFilename}"), s"conf/$applicationConfFilename"),
-        (file(s"$targetConf/${applicationCiConfFilename}"), s"conf/$applicationCiConfFilename"),
-        (file(s"${baseProjectPath}/${targetScala}/${jarName}"), jarName),
-        (file(s"$baseProjectPath/target/upack.json"), s"upack.json")
+        (file(s"$baseProjectPath/conf/${applicationConfFilename}"), s"conf/$applicationConfFilename"),
+        (file(s"$baseProjectPath/conf/${applicationCiConfFilename}"), s"conf/$applicationCiConfFilename"),
+        (file(s"${baseProjectPath}/${targetScala}/${jarName}"), jarName)
       )
 
-      val zip = file(s"$baseProjectPath/$targetScala/${baseDirectory.value.getName}-assemblies-${version.value}.upack")
+      val zip = file(s"$baseProjectPath/$targetScala/${Name}-assemblies-${version.value}.zip")
 
       IO.zip(zipContents, zip)
 
