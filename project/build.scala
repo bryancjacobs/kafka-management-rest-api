@@ -79,16 +79,24 @@ object KafkaManagementRestApiBuild extends Build {
       // reusable across all scripts
       val assemblyName = "assembly"
       val baseProjectPath = baseDirectory.value.getAbsolutePath
+      println(s"baseDirectory.value.getAbsolutePath: ${baseProjectPath}")
 
       val jar = "jar"
       val targetScala = "target/scala-2.11"
       val jarPostfix = s"$assemblyName-${version.value}.$jar"
       val jarName = s"${baseDirectory.value.getName}-$jarPostfix"
 
+      println(s"jarName: ${jarName}")
+
       val applicationConfFilename = "application.conf"
+      println(s"applicationConfFilename: ${applicationConfFilename}")
+
       val applicationCiConfFilename = "application-ci.conf"
+      println(s"applicationCiConfFilename: ${applicationCiConfFilename}")
 
       val targetConf = s"$baseProjectPath/target/conf"
+
+      println(s"baseProjectPath/target/conf: ${targetConf}")
 
       val packageJson = file(s"$baseProjectPath/target/upack.json")
 
