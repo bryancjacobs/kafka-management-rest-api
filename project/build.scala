@@ -1,4 +1,6 @@
 
+import java.nio.charset.Charset
+
 import sbt._
 import Keys._
 import org.scalatra.sbt._
@@ -88,6 +90,17 @@ object KafkaManagementRestApiBuild extends Build {
 
       val targetConf = s"$baseProjectPath/target/conf"
 
+      val packageJson = file(s"$baseProjectPath/target/upack.json")
+
+      val upackJson = s"""
+        {
+        "name":"kafka-management-rest-api"
+        "version": ${version.value}
+        }
+          """
+
+      IO.write(packageJson, upackJson,Charset.forName("utf-8"))
+
       // directory to contain all application conf files
       IO.createDirectories(Seq(file(targetConf)))
 
@@ -95,7 +108,8 @@ object KafkaManagementRestApiBuild extends Build {
       val zipContents: Seq[(File, String)] = Seq(
         (file(s"$targetConf/${applicationConfFilename}"), s"conf/$applicationConfFilename"),
         (file(s"$targetConf/${applicationCiConfFilename}"), s"conf/$applicationCiConfFilename"),
-        (file(s"${baseProjectPath}/${targetScala}/${jarName}"), jarName)
+        (file(s"${baseProjectPath}/${targetScala}/${jarName}"), jarName),
+        (file(s"$baseProjectPath/target/upack.json"), s"upack.json")
       )
 
       val zip = file(s"$baseProjectPath/$targetScala/${baseDirectory.value.getName}-assemblies-${version.value}.zip")
