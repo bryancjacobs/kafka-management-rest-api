@@ -113,6 +113,12 @@ object KafkaManagementRestApiBuild extends Build {
       IO.createDirectories(Seq(file(targetConf)))
 
       // specify zip contents
+      println(s"$targetConf/${applicationConfFilename}")
+
+      println(s"$targetConf/${applicationCiConfFilename}")
+
+      println(s"${baseProjectPath}/${targetScala}/${jarName}")
+
       val zipContents: Seq[(File, String)] = Seq(
         (file(s"$targetConf/${applicationConfFilename}"), s"conf/$applicationConfFilename"),
         (file(s"$targetConf/${applicationCiConfFilename}"), s"conf/$applicationCiConfFilename"),
