@@ -99,6 +99,11 @@ object KafkaManagementRestApiBuild extends Build {
 
       println(s"baseProjectPath/target/conf: ${targetConf}")
 
+      // set teamcity parameters
+
+      println(s"##teamcity[setParameter name='name' value='${name.value}']")
+      println(s"##teamcity[setParameter name='version' value='${version.value}']")
+
       val packageJson = file(s"$baseProjectPath/target/upack.json")
 
       val upackJson = s"""
