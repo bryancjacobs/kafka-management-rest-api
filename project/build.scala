@@ -100,9 +100,12 @@ object KafkaManagementRestApiBuild extends Build {
       println(s"baseProjectPath/target/conf: ${targetConf}")
 
       // set teamcity parameters
+      // This is required by Teamcity to find the .zip when version changes
 
       println(s"##teamcity[setParameter name='name' value='${name.value}']")
       println(s"##teamcity[setParameter name='version' value='${version.value}']")
+
+      // End of teamcity parameters
 
       val packageJson = file(s"$baseProjectPath/target/upack.json")
 
