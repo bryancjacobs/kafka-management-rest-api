@@ -10,7 +10,7 @@ import scaldi.Module
   */
 class AppModule extends Module{
 
-  // setup topic configuration
+  // This is where all the Dependency Injection gets configured
   bind[TopicRepo] to new TopicRepo
   bind[TopicService] to new TopicService(inject[TopicRepo])
   bind[TopicRest] to new TopicRest(inject[TopicService])
