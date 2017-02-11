@@ -16,7 +16,7 @@ object KafkaManagementRestApiBuild extends Build {
 
   val Name = "kafka-management-rest-api"
 
-  val Version = "1.0"
+  val Version = "1.0.0"
 
   val ScalaVersion = "2.11.8"
 
