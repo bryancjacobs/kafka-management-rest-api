@@ -113,8 +113,7 @@ object KafkaManagementRestApiBuild extends Build {
         {
         "name":"${baseDirectory.value.getName}"
         "version": ${version.value}
-        }
-          """
+        }"""
 
       IO.write(packageJson, upackJson,Charset.forName("utf-8"))
 
@@ -134,7 +133,7 @@ object KafkaManagementRestApiBuild extends Build {
         (file(s"${baseProjectPath}/${targetScala}/${jarName}"), jarName)
       )
 
-      val zip = file(s"$baseProjectPath/$targetScala/${Name}-assemblies-${version.value}.zip")
+      val zip = file(s"$baseProjectPath/$targetScala/${Name}-assemblies_${version.value}_.zip")
 
       IO.zip(zipContents, zip)
 
