@@ -5,6 +5,7 @@ import java.util.UUID
 import com.maritzcx.kafka.mgmt.api.ScalaTestSupport
 import com.maritzcx.kafka.mgmt.api.exception.TopicAlreadyExistsException
 import com.maritzcx.kafka.mgmt.api.model.Topic
+import com.maritzcx.kafka.mgmt.api.tags.SmokeTest
 import kafka.admin.AdminUtils
 
 /**
@@ -14,7 +15,7 @@ class TopicRepoIT extends ScalaTestSupport  {
 
   val topicRepo = new TopicRepo
 
-  "list" should "return test1 and test2" in {
+  "list" should "return test1 and test2" taggedAs(SmokeTest) in {
 
     val topics = topicRepo.list()
 
