@@ -1,5 +1,6 @@
 package com.maritzcx.kafka.mgmt.api
 
+import com.maritzcx.kafka.mgmt.api.config.ConfigManager
 import org.scalatra.test.scalatest.ScalatraSuite
 
 /**
@@ -7,20 +8,29 @@ import org.scalatra.test.scalatest.ScalatraSuite
   */
 trait DynamicScalatraSuite extends ScalatraSuite {
 
-//  override def baseUrl =
+
+  val shouldEnableJetty = ConfigManager.config.getBoolean("should.enable.jetty")
+
+  override def baseUrl = shouldEnableJetty match {
+
+    // let scalatra spin up a local jetty server for the tests and use localhost:<availableport>
+    case true => super.baseUrl
+
+    // assign a baseUrl for the rest calls for scalatra
+    case false => ConfigManager.config.getString("kmra.url")
+  }
 
   override protected def beforeAll(): Unit = {
 
-    // TODO: make this configurable
+    if(shouldEnableJetty)
+      start()
 
-    start()
   }
 
   override protected def afterAll(): Unit = {
 
-    // TODO: make this configurable
-
-    stop()
+    if(shouldEnableJetty)
+      stop()
   }
 
 }
