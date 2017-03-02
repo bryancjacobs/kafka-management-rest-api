@@ -22,15 +22,13 @@ trait DynamicScalatraSuite extends ScalatraSuite {
 
   override protected def beforeAll(): Unit = {
 
-    if(shouldEnableJetty)
-      start()
+    if(shouldEnableJetty) start()
 
   }
 
   override protected def afterAll(): Unit = {
 
-    if(shouldEnableJetty)
-      stop()
+    if(shouldEnableJetty) stop()
   }
 
 }

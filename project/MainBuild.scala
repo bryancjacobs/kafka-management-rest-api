@@ -34,7 +34,6 @@ object MainBuild extends Build {
         "org.scalatra" %% "scalatra-auth" % ScalatraVersion,
         "org.scalatra" %% "scalatra-scalate" % ScalatraVersion,
         "org.scalatra" %% "scalatra-json" % ScalatraVersion,
-        "org.scalatest" % "scalatest_2.11" % "2.2.6",
         "org.scalatra" %% "scalatra-scalatest" % "2.4.1" % "test",
         "org.mockito" % "mockito-all" % "1.9.5" % "test",
         "org.json4s"   %% "json4s-jackson" % "3.3.0",
